@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astrology Chat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 850px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .form-group, .chat-box, .messages, .input-area {
+      margin-bottom: 20px;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      max-width: 75%;
+      white-space: pre-wrap;
+    }
+    .user { background-color: #d1e7dd; align-self: flex-end; }
+    .bot { background-color: #f8d7da; align-self: flex-start; }
+    .messages { display: flex; flex-direction: column; max-height: 400px; overflow-y: auto; }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🖠 Astrology Chat Analysis</h2>
+    <div class="form-group">
+      <label>Date of Birth: <input type="date" id="dob" required /></label><br />
+      <label>Time of Birth: <input type="time" id="tob" required /></label><br />
+      <label>Location: <input type="text" id="location" value="Mumbai, India" /></label><br />
+      <label>Timezone:
+        <select id="timezone">
+          <option value="5.5">IST (+5:30)</option>
+          <option value="0">GMT (0)</option>
+          <option value="1">CET (+1:00)</option>
+          <option value="-5">EST (-5:00)</option>
+        </select>
+      </label><br />
+      <button onclick="generateCharts()">Get Charts & Start Chat</button>
+    </div>
+
+    <div class="chat-box" style="display:none">
+      <h3>💬 Chat with Gemini (Astro-based)</h3>
+      <div class="messages" id="chatMessages"></div>
+      <div class="input-area">
+        <textarea id="chatInput" rows="3" placeholder="Ask your question here..."></textarea><br />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const GEMINI_API_KEY = 'AIzaSyCQ8UKs9qDqv3137MEXes-8RcRk5MU--4I';
+    const ASTROLOGY_KEY_1 = 'C2bw60b9GoTb3PwJ8YOR4lVQdKy8G7Y5ELYYJsF7';
+    const ASTROLOGY_KEY_2 = 'qpCWqzAiVV9kvKIV2tG8c48sjzeSPXLX88IAnbYh';
+
+    let chartData = {};
+    let dashaOutput = {};
+
+    async function fetchChart(url, payload) {
+      try {
+        let res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': ASTROLOGY_KEY_1 },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error();
+        return await res.json();
+      } catch {
+        let res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-api-key': ASTROLOGY_KEY_2 },
+          body: JSON.stringify(payload)
+        });
+        return await res.json();
+      }
+    }
+
+    async function generateCharts() {
+      const dob = document.getElementById('dob').value;
+      const tob = document.getElementById('tob').value;
+      const location = document.getElementById('location').value;
+      const timezone = parseFloat(document.getElementById('timezone').value);
+
+      const [year, month, date] = dob.split('-').map(Number);
+      const [hours, minutes] = tob.split(':').map(Number);
+
+      const geoRes = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(location)}&key=4334b95ef0c645e79092cc2c3739083c`);
+      const geoData = await geoRes.json();
+      const { lat, lng } = geoData.results[0].geometry;
+
+      const payload = {
+        year, month, date, hours, minutes, seconds: 0, latitude: lat, longitude: lng, timezone,
+        config: { observation_point: 'topocentric', ayanamsha: 'lahiri' }
+      };
+
+      chartData.d1 = await fetchChart('https://json.freeastrologyapi.com/planets/extended', payload);
+      chartData.d9 = await fetchChart('https://json.freeastrologyapi.com/navamsa-chart-info', payload);
+      chartData.d60 = await fetchChart('https://json.freeastrologyapi.com/d60-chart-info', payload);
+      chartData.shadbala = await fetchChart('https://json.freeastrologyapi.com/shadbala/summary', payload);
+      dashaOutput = await fetchChart('https://json.freeastrologyapi.com/vimsottari/dasa-information', payload);
+
+      document.querySelector('.chat-box').style.display = 'block';
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.innerHTML = '<div class="message bot">🔮 Your charts are ready! Ask your question now.</div>';
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('chatInput').value;
+      if (!input.trim()) return;
+
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.innerHTML += `<div class="message user"><b>You:</b> ${input}</div>`;
+
+      const prompt = `This is an astrology chart with D1, D9, D60, Shadbala, and Dasha data. Answer the user's question.
+\nD1: ${JSON.stringify(chartData.d1.output)}\n\nD9: ${JSON.stringify(chartData.d9.output)}\n\nD60: ${JSON.stringify(chartData.d60.output)}\n\nShadbala: ${JSON.stringify(chartData.shadbala.output)}\n\nDasha: ${JSON.stringify(dashaOutput.output)}\n\nQuestion: ${input}`;
+
+      const geminiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        }
+      );
+
+      const geminiJson = await geminiRes.json();
+      const reply = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text || '❌ No response.';
+      chatMessages.innerHTML += `<div class="message bot"><b>Gemini:</b> ${reply}</div>`;
+      document.getElementById('chatInput').value = '';
+    }
+  </script>
+</body>
+</html>
