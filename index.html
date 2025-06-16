@@ -4,48 +4,122 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Astrology Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', sans-serif;
       background-color: #f4f6fa;
-      padding: 20px;
+      padding: 40px 20px;
+      color: #333;
     }
     .container {
-      max-width: 850px;
-      margin: 40px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
     }
-    .form-group, .chat-box, .messages, .input-area {
-      margin-bottom: 20px;
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #4b0082;
+      margin-bottom: 24px;
+      text-align: center;
     }
-    textarea {
+    .form-group label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .form-group input,
+    .form-group select {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
+      margin-top: 6px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      display: inline-block;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      background-color: #4b0082;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #3a0069;
+    }
+    .chat-box {
+      margin-top: 40px;
+      border-top: 1px solid #ddd;
+      padding-top: 30px;
+    }
+    .chat-box h3 {
+      font-size: 22px;
+      color: #4b0082;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .messages {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #e1e4e8;
+    }
+    .message {
+      padding: 14px 18px;
+      border-radius: 10px;
+      max-width: 80%;
+      font-size: 15px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .user {
+      background-color: #e1f3e8;
+      align-self: flex-end;
+    }
+    .bot {
+      background-color: #fcebea;
+      align-self: flex-start;
+    }
+    .input-area textarea {
+      width: 100%;
+      padding: 12px;
       font-size: 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
+      resize: none;
     }
-    .message {
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      max-width: 75%;
-      white-space: pre-wrap;
+    .input-area button {
+      margin-top: 10px;
+      width: 100%;
     }
-    .user { background-color: #d1e7dd; align-self: flex-end; }
-    .bot { background-color: #f8d7da; align-self: flex-start; }
-    .messages { display: flex; flex-direction: column; max-height: 400px; overflow-y: auto; }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+      h2 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
@@ -53,9 +127,15 @@
   <div class="container">
     <h2>🖠 Astrology Chat Analysis</h2>
     <div class="form-group">
-      <label>Date of Birth: <input type="date" id="dob" required /></label><br />
-      <label>Time of Birth: <input type="time" id="tob" required /></label><br />
-      <label>Location: <input type="text" id="location" value="Mumbai, India" /></label><br />
+      <label>Date of Birth:
+        <input type="date" id="dob" required />
+      </label>
+      <label>Time of Birth:
+        <input type="time" id="tob" required />
+      </label>
+      <label>Location:
+        <input type="text" id="location" value="Mumbai, India" />
+      </label>
       <label>Timezone:
         <select id="timezone">
           <option value="5.5">IST (+5:30)</option>
@@ -63,7 +143,7 @@
           <option value="1">CET (+1:00)</option>
           <option value="-5">EST (-5:00)</option>
         </select>
-      </label><br />
+      </label>
       <button onclick="generateCharts()">Get Charts & Start Chat</button>
     </div>
 
@@ -71,12 +151,13 @@
       <h3>💬 Chat with Gemini (Astro-based)</h3>
       <div class="messages" id="chatMessages"></div>
       <div class="input-area">
-        <textarea id="chatInput" rows="3" placeholder="Ask your question here..."></textarea><br />
+        <textarea id="chatInput" rows="3" placeholder="Ask your question here..."></textarea>
         <button onclick="sendMessage()">Send</button>
       </div>
     </div>
   </div>
 
+  <!-- Scripts remain unchanged -->
   <script>
     const GEMINI_API_KEY = 'AIzaSyCQ8UKs9qDqv3137MEXes-8RcRk5MU--4I';
     const ASTROLOGY_KEY_1 = 'C2bw60b9GoTb3PwJ8YOR4lVQdKy8G7Y5ELYYJsF7';
@@ -141,7 +222,520 @@
       chatMessages.innerHTML += `<div class="message user"><b>You:</b> ${input}</div>`;
 
       const prompt = `This is an astrology chart with D1, D9, D60, Shadbala, and Dasha data. Answer the user's question.
-\nD1: ${JSON.stringify(chartData.d1.output)}\n\nD9: ${JSON.stringify(chartData.d9.output)}\n\nD60: ${JSON.stringify(chartData.d60.output)}\n\nShadbala: ${JSON.stringify(chartData.shadbala.output)}\n\nDasha: ${JSON.stringify(dashaOutput.output)}\n\nQuestion: ${input}`;
+      Mere paas ek vyakti ka D1 (Rasi Chart) aur D9 (Navamsa Chart) ka output hai. Tum ek professional astrologer ho, aur tumhe unke janm kundli ke adhar par puri analysis deni hai. Analysis sirf kaam ki honi chahiye – love life, married life, nature, thinking, strengths, weaknesses, career, health, aur har house aur planet ke effect ke saath.
+kam se kam 500 lines ya apni maximum limit tk lines output me likhiyo...full detail about each and every house, usme konsa planet hai..konsi rashi hai..kon uska malik hai..uspr kis planet ki dhristi pad rahi hai...shani ki 3 dhristi hoti hai 3rd,7th,10th, jupiter ki bhi 
+3 dhrishti hoti hai... 5th , 7th, 9th, mars ki bhi 3 dhristi hoti hai.. 4th 7th and 8th..  and rahu ketu ki bhi 3 dhrishti hoti hai...5th , 7th, 9th,
+aur dhayaan rakhiyo konsa planet kis rashi me uch aur nich ka hota hai..
+Exaltation and Debilitation of Planets
+Based on Moon Sign
+
+Every planet has a positive and negative placement. For instance, a well-placed planet, or an exalted planet can lead you to great achievements in life. At the same time, a debilitated planet in a weak position can cause you to go through a rough and challenging phase.
+
+Exaltation and Debilitation of Planets
+
+The happiest moment in your life: Exaltation of Planets
+We all have that one favorite spot in our house that has a very special place in our heart. The same thing happens with the Planets as well, where if the planet is placed in their comfort zone, which is basically a particular range of degrees where it works very well, it will bring you wealth and success; such a placement is referred to as Exaltation in Vedic Astrology.
+
+Claim your 30-page unique FREE HOROSCOPE & learn about the position of planets in your horoscope.
+
+Name
+Male
+Please enter name
+Email
+name@example.com
+Date of Birth
+Day
+Month
+Year
+Time of Birth
+Hour
+Minute
+
+
+
+Exalted Planets signify strength and happiness by being placed in that friendly zodiac sign, like when you are at your home and there’s something special about that one corner, which attracts you always to spend your time there. You also get new innovative ideas while the spark of creativity will ignite your mind when resting in that corner.
+
+
+The tough time in your life: Debilitation of Planets
+Due to your busy schedule, you were not able to clean your garden and the room that got messed because of the last party night. Now, you are struggling while cleaning that alone and are exhausted with the burden of work related to that room or the corner. All these scenarios will be faced by planets as well, where the planet gets placed in such a zodiac sign, that it gets tired and loses its strength. This form of placements is known as debilitation in Vedic Astrology.
+
+If you have debilitated Planets in your birth chart, you will face struggles related to the significance of those Planets.
+
+
+The range in the degree where the Planets get Exalted and Debilitated:
+Exaltation of Planets in Degree with zodiac sign
+
+PLANETS	DEEPEST EXALTATION ZODIAC SIGN	DEEPEST EXALTATION DEGREE
+SUN	ARIES	10 DEGREE
+MOON	TAURUS	3 DEGREE
+MARS	CAPRICORN	28 DEGREE
+MERCURY	VIRGO	15 DEGREE
+JUPITER	CANCER	5 DEGREE
+VENUS	PISCES	27 DEGREE
+SATURN	LIBRA	20 DEGREE
+ 
+
+Debilitation of Planets in Degree with Zodiac signs:
+
+PLANETS	DEEPEST DEBILITATION ZODIAC SIGN	DEEPEST DEBILITATION DEGREE
+SUN	LIBRA	10 DEGREE
+MOON	SCORPIO	3 DEGREE
+MARS	CANCER	28 DEGREE
+MERCURY	PISCES	15 DEGREE
+JUPITER	CAPRICORN	5 DEGREE
+VENUS	VIRGO	27 DEGREE
+SATURN	ARIES	20 DEGREE
+
+. Sun: You should be prepared to enjoy the royal status and charm like a king, if your Sun is exalted in your horoscope. But if the Sun is in debilitation, stay away from legal matters or you will face setbacks in life related to government issues and taxes. Your relationship with your father will depend on the exaltation and debilitation as well.
+
+2. Moon: You will face mood swings, and every now and then you will change your mindset, which will be the greatest barrier in your success with the debilitated Moon. Be ready to be in the limelight and enjoy all the name and fame in your career along with happiness from your mother as well if the Moon is in exaltation in your horoscope.
+
+3. Mars: You will enjoy the happiness and contentment from land and property with the exaltation in your birth chart. You will have good support you’re your brother and earn a decent status in the society. The Debilitation of Mars will create struggles in your life and property-related disputes with siblings will be there.
+
+4. Mercury: You will have sharp intelligence a good amount of knowledge related to mantras if Mercury is exalted. You will face problems in doing calculative work if your Mercury is in debilitation while your relationship with your sister may get strained as well.
+
+5. Jupiter: When Jupiter is exalted, finances will be good for you and you will get the blessing of knowledge from a good mentor. The Debilitation of Jupiter can create setbacks in your finances and children-related matters.
+
+6. Venus: Be ready to have all the luxuries, fun, party, love and romance if Venus is exalted in your chart. The Debilitation of Venus will create a distance in relationships and the essence of love will be missing from your married life.
+
+7. Saturn: While an exalted Saturn will give you the best in terms of career and status, if it is debilitated, you will face tough challenges related to career and relationship.
+
+Have a deep look into your horoscope for the Exaltation and Debilitation of planets to enjoy life and your achievements while prepping for the upcoming challenges.
+
+ye bhi dhyaan rakhiyo konsa planet apni friend aur enemy ki rashi me hai...dhyaan se sahi reply kriyo please... proper professinonal reply...aur minimum 50 lines...
+apni maximum limit me reply kriyo
+ye Fire Element Signs: Aries (1), Leo (5) and Sagittarius (9)
+
+Fire element represents ambition, transformation, energy, inspiration, push.
+
+Earth Element Signs: Taurus (2), Virgo (6) and Capricorn (10)
+
+Earth element represents practicality, rationality, material world, solidity, concreteness
+
+Air Element Signs: Gemini (3), Libra (7) and Aquarius (11)
+
+Air element represents expansion, limitlessness, creativity, ideas, abstract things
+
+Water Element Signs: Cancer (4), Scorpio (8) and Pisces (12)
+dhyaan rakhiyo properly professionally reply krna hai..
+Movable Signs: 1, 4, 7,10
+
+Movable signs promote changes, movement, motion, action
+
+Fixed Signs: 2, 5, 8, 11
+
+Fixed signs also known as stable signs promote stability, security, passiveness, control
+
+Dual Signs: 3, 6, 9, 12
+
+Dual signs have both characteristics of movable signs and fixed signs
+
+tell them about their atmakarka..
+analysis puri detail me hinid me diyo..pr english language me
+jaise me likh raha hu hindi me pr english language me..waise hi reply diyo...
+. Bahut hi professional tone me likhna hai jaise kisi expert astrologer se koi analysis le raha ho. Har ek house me kaunsa planet hai, uska kya matlab hai, konsa lord kis house me hai, uska kya impact hai, etc. Detail me likhna.
+also in order to be a professional astrologer..basically har ek planet ki power uske navamasma me position se determine hoti hai..to uski d9 me position check krke uski power ka order bataiyo..aur sath hi saath kundli me jo jo yog ban rahe hai...mtlb planets k combination se mtlb positive aur negative..vo bhii bataiyo....|
+
+
+
+Personal Planets
+
+1. Sun (Surya): The Celestial King
+
+It is said that the Sun is the soul of the planets. It is vital, respectable, authoritative, and has many other great attributes. Sun will demonstrate how an individual reflects themselves onto the world.
+
+
+
+Astrologically speaking, a strong Sun denotes authority and vitality, but a weak Sun can indicate egotism and a lack of self-assurance. When it involves your professional life, you might require a powerful Sun, but not when it relates to your personal connections.
+
+
+
+It symbolizes
+
+
+
+the Kshatriya caste,
+
+the vice planet,
+
+the Sattva guna,
+
+the Pitta nature,
+
+and the fire component.
+
+According to astrology, the Sun governs the
+
+
+
+head,
+
+bones,
+
+eyes,
+
+heart,
+
+and brain.
+
+
+
+Source: Cosmic Insights
+
+2. Moon (Chandra): The Nurturer
+
+In the navagraha, the Moon stands for our psyche. It is recognised for having a maternal influence on people and for granting feelings of love, happiness, and positivity. Since the Moon represents the self in a kundli, its strength will benefit you at every stage of life.
+
+
+
+However, mental health issues like
+
+
+
+stress,
+
+depression,
+
+disinterest, etc,
+
+can be brought on by a weak Moon.
+
+
+
+Astrologically, the Moon is a member of the Vaisya (business-class) caste. It symbolizes
+
+
+
+ladies,
+
+Vata-Kapha nature and
+
+sattva Guna.
+
+You must wear white more often if the Moon is weak in your kundli. According to astrology, the Moon governs the
+
+
+
+mind,
+
+mother,
+
+art,
+
+vision,
+
+saliva,
+
+lungs,
+
+silver,
+
+rice,
+
+and the chest.
+
+
+
+Source: Rudraksha Ratna
+
+3. Mars (Mangal): The Warrior Planet
+
+According to astrology, Mars stands for boldness, strength, confidence, bravery, and passion. You can succeed in your work and any other professional effort if your kundli has a strong Mars. An unfriendly Mars, however, is harmful to your marriage.
+
+
+
+Mars is a member of the element fire. The planet is associated with the
+
+
+
+Tamo-guna class of warriors (Kshatriyas),
+
+Pitta nature,
+
+cruelty and aggression,
+
+and a preference for red.
+
+In astrology, Mars is in charge of the following:
+
+
+
+siblings,
+
+arms,
+
+thieves,
+
+wounds,
+
+daal,
+
+pitta,
+
+blood,
+
+muscles,
+
+hearing,
+
+nose, etc.
+
+
+
+Source: India Parenting
+
+‍
+
+
+
+4. Mercury (Budh): The Witty Planet
+
+Of the nine planets in astrology, Mercury represents a person's humor, communication, intelligence, reasoning, and awareness. You must have guessed that high Mercury encourages education. It is given more weight in the formative years of education.
+
+
+
+Mercury is the planet of the business class (Vaishya). It is a planet that belongs to the element Earth and is neutral. The three distinct natures of Vaat, Pitta, and Kapha are all present on Mercury. Green is the color that Mercury loves.
+
+
+
+Mercury is the planet of the mother's brother and skin and sex-related illnesses. Additionally, it stands for
+
+
+
+trade,
+
+mathematics,
+
+speech,
+
+tongues,
+
+voice,
+
+dumbness,
+
+and sloth.
+
+
+
+Source: Space.com
+
+5. Venus (Shukra): The Aesthetic Planet
+
+Venus is the astrological symbol for love, relationships, romance, having sex, and other such characteristics. It also affects a person's marriage and business relationships with partners.
+
+
+
+Consequently, a strong Venus in the kundli promotes a successful career. In contrast, a weak Venus controls troubled relationships and love life. Venus is a stunning woman who is a member of the Brahmin caste. It stands for the Rajoguni, Kapha, charm, and lament of the water.
+
+
+
+White is the color of Venus and is associated with
+
+
+
+beauty,
+
+marriage,
+
+love,
+
+sex,
+
+blissful marriage,
+
+poetry,
+
+singing,
+
+eyes, and ladies, among other things.
+
+
+
+Source: Nasa Science
+
+Social Planets
+
+6. Jupiter (Brihaspati): The Giant Benevolent
+
+Of the 9 planets of astrology, one of the most advantageous planets is Jupiter. It can support you in a variety of pursuits, particularly in terms of learning new things. Jupiter supports a person's academic and professional success. Jupiter, thus, has little impact on a person's early years.
+
+
+
+The planet stands for both the space component and the Brahmin caste. It represents the nature of Sattva Guna and Kapha. Yellow is the color that symbolizes Jupiter. Jupiter also represents
+
+
+
+the Vedas,
+
+the Sun,
+
+education,
+
+progeny,
+
+marriage,
+
+kidney,
+
+fat,
+
+kapha,
+
+knowledge,
+
+guru,
+
+gold,
+
+and swelling.
+
+
+
+Source: Britannica
+
+7. Saturn (Shani): The Disciplinarian
+
+As the astrological ruler of karma, Saturn is frequently referred to as the karmic planet. The person's karma determines the outcome. In other words, depending on your karma, it can benefit or harm you as a human.
+
+
+
+Saturn is also a teacher, so doing good deeds in life will help you accomplish more. If you commit terrible deeds, however, it will teach you a lesson. The color black is symbolized by the planet Saturn.
+
+
+
+Its name refers to the element of air. Saturn is also represented by
+
+
+
+odd eyes,
+
+a tall, slender body,
+
+cruelty,
+
+and impotence.
+
+Shudra is the caste that Saturn represents. Its nature is Vata Kapha.
+
+
+
+Saturn is the planet of
+
+
+
+jealousy,
+
+roguishness,
+
+thievery,
+
+beasts,
+
+servants,
+
+aging,
+
+moles,
+
+physical strength,
+
+yoga practice,
+
+renunciation,
+
+luxury,
+
+service,
+
+and heart ailments, among other characteristics.
+
+
+
+Source: Planet Facts
+
+Collective Planets
+
+8. Rahu: The Materialistic Planet
+
+Rahu is a planet associated with various symbolic meanings, but it also depicts human wants and manipulation. The formless shadow planet is called Rahu. If a person falls into the Rahu's trap, it is known to make them addicted, avaricious, and full of bad energy. If you succumb to its unknowable greed, you will have to face Rahu's wrath.
+
+
+
+Rahu is the Vice Planet for the natures of Chandaal, Tamoguni, and Vaat Pitta. It denotes the use of dark colors. Rahu also represents
+
+
+
+the grandpa,
+
+the granny,
+
+deceit,
+
+mishap,
+
+fight,
+
+stealing,
+
+snakebite,
+
+overseas travel,
+
+illnesses relating to the skin and legs,
+
+and challenging life advancement.
+
+
+
+Source: Wikipedia
+
+9. Ketu: The Freedom Planet
+
+In astrology, Ketu represents both spirituality and detachment. Aside from Rahu, Ketu is the second shadow planet in astrology. It is well known that Ketu satisfies materialistic cravings, but only for personal benefit.
+
+
+
+Ketu's adverse effects can either make a person ungrateful for material things or drive them away from commonplace and worldly goals. Astrologically speaking, Ketu is similar to Mars.
+
+
+
+
+
+Source: GaneshaSpeaks
+
+Summary of 9 Planets in Vedic Astrology and Their Features
+
+Sun: Stands for energy and the essence of a person's identity. Represents your life energy, ego, and willpower. Leadership abilities and self-assurance are fostered by a strong Sun.
+
+Moon: Your inner world and feelings are reflected in it. It controls your inclinations and responses. Emotional stability and intuition are assured by a harmonious Moon.
+
+Mars: Provides you with strength, drive, and resolve. It is the motivation behind your goals and aspirations. Mars molds your spirit of competition.
+
+Mercury: Controls intellect, communication, and flexibility. It affects how well you can write and speak. Mercury in the sign of Pisces improves your ability to analyze.
+
+Venus: It is the planet of beauty and love, controls pleasures, relationships, and aesthetics. It ascertains your creative aptitude and amorous proclivities.
+
+Jupiter: It is the planet of development and expansion. It represents luck, wisdom, and superior knowledge. Wealth and enlightenment are brought about by a strong Jupiter.
+
+Saturn: Uses tragedy to impart life lessons. It represents accountability, diligence, and perseverance. Perseverance is the key to success under a well-aspected Saturn.
+
+also dhyaan rahiyo ki tere paas present day grah transit ki bhi summary hogi...to answer krte waqt aaj ki date k grah bhi evaluate krke..aaj k halat bataiyo...
+aur agar tere paas vimshotri dasha wagera koi chij ho..to dhyaan rakhiyo ki present day k hisab se uski proper dasha antardasha sab nikal diyo...
+aur fir result evalutate kriyo...
+kisi bhi question ka answer ye mat diyo ki mujhe nhi pata..ya aise chije..please sahi se perform kriyo
+
+Location: ${location}
+Timezone: ${timezone}
+
+D1 Chart Output:
+${d1Data}
+
+D9 Chart Output:
+${d9Data}
+      
+      
+      \nD1: ${JSON.stringify(chartData.d1.output)}\n\nD9: ${JSON.stringify(chartData.d9.output)}\n\nD60: ${JSON.stringify(chartData.d60.output)}\n\nShadbala: ${JSON.stringify(chartData.shadbala.output)}\n\nDasha: ${JSON.stringify(dashaOutput.output)}\n\nQuestion: ${input}`;
 
       const geminiRes = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
