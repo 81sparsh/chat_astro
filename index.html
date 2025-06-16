@@ -6,11 +6,7 @@
   <title>Astrology Chat</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f4f6fa;
@@ -114,12 +110,8 @@
       width: 100%;
     }
     @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-      h2 {
-        font-size: 22px;
-      }
+      .container { padding: 20px; }
+      h2 { font-size: 22px; }
     }
   </style>
 </head>
@@ -157,7 +149,6 @@
     </div>
   </div>
 
-  <!-- Scripts remain unchanged -->
   <script>
     const GEMINI_API_KEY = 'AIzaSyCQ8UKs9qDqv3137MEXes-8RcRk5MU--4I';
     const ASTROLOGY_KEY_1 = 'C2bw60b9GoTb3PwJ8YOR4lVQdKy8G7Y5ELYYJsF7';
@@ -165,6 +156,7 @@
 
     let chartData = {};
     let dashaOutput = {};
+    let conversationHistory = [];
 
     async function fetchChart(url, payload) {
       try {
@@ -210,18 +202,25 @@
       dashaOutput = await fetchChart('https://json.freeastrologyapi.com/vimsottari/dasa-information', payload);
 
       document.querySelector('.chat-box').style.display = 'block';
-      const chatMessages = document.getElementById('chatMessages');
-      chatMessages.innerHTML = '<div class="message bot">🔮 Your charts are ready! Ask your question now.</div>';
-    }
+      document.getElementById('chatMessages').innerHTML = `
+        <div class="message bot"><b>Gemini:</b> 🔮 Your charts are ready! Ask your question now.</div>
+      `;
 
-    async function sendMessage() {
-      const input = document.getElementById('chatInput').value;
-      if (!input.trim()) return;
+      conversationHistory = [{
+        role: "user",
+        parts: [{
+          text: `These are my astrology chart details:
+- D1 Chart: ${JSON.stringify(chartData.d1)}
+- D9 Chart: ${JSON.stringify(chartData.d9)}
+- D60 Chart: ${JSON.stringify(chartData.d60)}
+- Shadbala: ${JSON.stringify(chartData.shadbala)}
+- Dasha: ${JSON.stringify(dashaOutput)}`
+        }]
+      }];
 
-      const chatMessages = document.getElementById('chatMessages');
-      chatMessages.innerHTML += `<div class="message user"><b>You:</b> ${input}</div>`;
-
-      const prompt = `This is an astrology chart with D1, D9, D60, Shadbala, and Dasha data. Answer the user's question.
+      // Optionally ask a sample question
+      const samplePrompts = [
+        "this is an astrology chart with D1, D9, D60, Shadbala, and Dasha data. Answer the user's question.
       Mere paas ek vyakti ka D1 (Rasi Chart) aur D9 (Navamsa Chart) ka output hai. Tum ek professional astrologer ho, aur tumhe unke janm kundli ke adhar par puri analysis deni hai. Analysis sirf kaam ki honi chahiye – love life, married life, nature, thinking, strengths, weaknesses, career, health, aur har house aur planet ke effect ke saath.
 kam se kam 500 lines ya apni maximum limit tk lines output me likhiyo...full detail about each and every house, usme konsa planet hai..konsi rashi hai..kon uska malik hai..uspr kis planet ki dhristi pad rahi hai...shani ki 3 dhristi hoti hai 3rd,7th,10th, jupiter ki bhi 
 3 dhrishti hoti hai... 5th , 7th, 9th, mars ki bhi 3 dhristi hoti hai.. 4th 7th and 8th..  and rahu ketu ki bhi 3 dhrishti hoti hai...5th , 7th, 9th,
@@ -231,29 +230,15 @@ Based on Moon Sign
 
 Every planet has a positive and negative placement. For instance, a well-placed planet, or an exalted planet can lead you to great achievements in life. At the same time, a debilitated planet in a weak position can cause you to go through a rough and challenging phase.
 
-Exaltation and Debilitation of Planets
-
-The happiest moment in your life: Exaltation of Planets
-We all have that one favorite spot in our house that has a very special place in our heart. The same thing happens with the Planets as well, where if the planet is placed in their comfort zone, which is basically a particular range of degrees where it works very well, it will bring you wealth and success; such a placement is referred to as Exaltation in Vedic Astrology.
-
-Claim your 30-page unique FREE HOROSCOPE & learn about the position of planets in your horoscope.
-
-Name
-Male
-Please enter name
-Email
-name@example.com
-Date of Birth
-Day
-Month
-Year
-Time of Birth
-Hour
-Minute
+Exaltation and Debilitation of Planets",
 
 
 
-Exalted Planets signify strength and happiness by being placed in that friendly zodiac sign, like when you are at your home and there’s something special about that one corner, which attracts you always to spend your time there. You also get new innovative ideas while the spark of creativity will ignite your mind when resting in that corner.
+
+
+
+      
+        "Exalted Planets signify strength and happiness by being placed in that friendly zodiac sign, like when you are at your home and there’s something special about that one corner, which attracts you always to spend your time there. You also get new innovative ideas while the spark of creativity will ignite your mind when resting in that corner.
 
 
 The tough time in your life: Debilitation of Planets
@@ -335,10 +320,15 @@ analysis puri detail me hinid me diyo..pr english language me
 jaise me likh raha hu hindi me pr english language me..waise hi reply diyo...
 . Bahut hi professional tone me likhna hai jaise kisi expert astrologer se koi analysis le raha ho. Har ek house me kaunsa planet hai, uska kya matlab hai, konsa lord kis house me hai, uska kya impact hai, etc. Detail me likhna.
 also in order to be a professional astrologer..basically har ek planet ki power uske navamasma me position se determine hoti hai..to uski d9 me position check krke uski power ka order bataiyo..aur sath hi saath kundli me jo jo yog ban rahe hai...mtlb planets k combination se mtlb positive aur negative..vo bhii bataiyo....|
+when i say you to reply..then you will reply...
+",
 
 
 
-Personal Planets
+
+
+      
+        "Personal Planets
 
 1. Sun (Surya): The Celestial King
 
@@ -724,32 +714,47 @@ also dhyaan rahiyo ki tere paas present day grah transit ki bhi summary hogi...t
 aur agar tere paas vimshotri dasha wagera koi chij ho..to dhyaan rakhiyo ki present day k hisab se uski proper dasha antardasha sab nikal diyo...
 aur fir result evalutate kriyo...
 kisi bhi question ka answer ye mat diyo ki mujhe nhi pata..ya aise chije..please sahi se perform kriyo
+  when i will say..then reply...
+      ",
+        "Puri professionally reply kriyo..jb  me bolu.tb reply kriyo",
+        "Now is ur time to reply..please professionally kriyo..taaki lage ki meri professional app hai"
+      ];
+      document.getElementById('chatInput').value = samplePrompts[0];
+    }
 
-Location: ${location}
-Timezone: ${timezone}
+    async function sendMessage() {
+      const input = document.getElementById('chatInput').value.trim();
+      if (!input) return;
 
-D1 Chart Output:
-${d1Data}
+      const chatMessages = document.getElementById('chatMessages');
+      chatMessages.innerHTML += `<div class="message user"><b>You:</b> ${input}</div>`;
 
-D9 Chart Output:
-${d9Data}
-      
-      
-      \nD1: ${JSON.stringify(chartData.d1.output)}\n\nD9: ${JSON.stringify(chartData.d9.output)}\n\nD60: ${JSON.stringify(chartData.d60.output)}\n\nShadbala: ${JSON.stringify(chartData.shadbala.output)}\n\nDasha: ${JSON.stringify(dashaOutput.output)}\n\nQuestion: ${input}`;
+      conversationHistory.push({
+        role: "user",
+        parts: [{ text: input }]
+      });
 
       const geminiRes = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+          body: JSON.stringify({ contents: conversationHistory })
         }
       );
 
       const geminiJson = await geminiRes.json();
       const reply = geminiJson?.candidates?.[0]?.content?.parts?.[0]?.text || '❌ No response.';
+
       chatMessages.innerHTML += `<div class="message bot"><b>Gemini:</b> ${reply}</div>`;
       document.getElementById('chatInput').value = '';
+
+      conversationHistory.push({
+        role: "model",
+        parts: [{ text: reply }]
+      });
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
   </script>
 </body>
